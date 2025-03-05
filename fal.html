@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فال حافظ | Hafez Divination</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu&display=swap');
+        .persian-font {
+            font-family: 'Noto Nastaliq Urdu', serif;
+        }
+        .card {
+            backdrop-filter: blur(16px) saturate(180%);
+            background-color: rgba(255, 255, 255, 0.75);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-500 to-indigo-900 flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl">
+        <h1 class="text-4xl text-center text-white mb-8 font-bold drop-shadow-lg">فال حافظ</h1>
+        
+        <div id="quoteCard" class="card rounded-xl border border-white/20 p-6 mb-6 transition-all duration-300 hover:shadow-2xl hidden">
+            <div class="space-y-6">
+                <div class="text-center">
+                    <h2 class="text-2xl font-semibold text-purple-800 persian-font" id="title"></h2>
+                    <p class="text-sm text-gray-600 mt-2">شماره فال: <span id="shomare"></span></p>
+                </div>
+                
+                <div class="bg-white/30 rounded-lg p-4">
+                    <p class="text-xl leading-relaxed text-gray-800 persian-font text-justify " id="rhyme"></p>
+                </div>
+                
+                <div class="bg-amber-100/50 rounded-lg p-4 border border-amber-200">
+                    <h3 class="text-lg font-medium text-amber-800 mb-2">تفسیر فال:</h3>
+                    <p class="text-gray-700 leading-normal persian-font" id="meaning"></p>
+                </div>
+            </div>
+        </div>
+
+        <button onclick="getNewQuote()" 
+                class="w-full py-3 px-6 bg-white/30 hover:bg-white/40 text-white rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            دریافت فال جدید
+        </button>
+    </div>
+
+    <script>
+        const apiUrl = 'https://one-api.ir/hafez/?token=152327:67c688a11fcfe';
+        const card = document.getElementById('quoteCard');
+        const loadingHtml = '<div class="text-center py-4">در حال دریافت فال...</div>';
+
+        async function getNewQuote() {
+            try {
+                card.classList.add('hidden');
+                document.querySelector('button').disabled = true;
+                
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+                
+                const result = {
+                    title: data.result.TITLE,
+                    rhyme: data.result.RHYME,
+                    meaning: data.result.MEANING,
+                    shomare: data.result.SHOMARE
+                };
+
+                document.getElementById('title').textContent = result.title;
+                document.getElementById('rhyme').innerHTML = result.rhyme.replace(/\r\n/g, '<br>');
+                document.getElementById('meaning').textContent = result.meaning;
+                document.getElementById('shomare').textContent = result.shomare;
+                
+                card.classList.remove('hidden');
+            } catch (error) {
+                alert('خطا در دریافت فال! لطفا دوباره امتحان کنید.');
+            } finally {
+                document.querySelector('button').disabled = false;
+            }
+        }
+
+        getNewQuote();
+    </script>
+</body>
+</html>
